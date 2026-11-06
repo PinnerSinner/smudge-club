@@ -1,0 +1,4 @@
+node_modules/
+assets/app.js.map
+.env
+.claude/
