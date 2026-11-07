@@ -1,6 +1,6 @@
 // Don't Lift: one line, one go. Lift the pen and the drawing is finished, then it replays your hesitation.
 import { sfx } from '../sound.js';
-import { TAU, clamp, lerp, paperGrain } from '../kit.js';
+import { PAINTBOX, TAU, clamp, lerp, paperGrain } from '../kit.js';
 
 const INK = { Endless: Infinity, 'Two metres': 7500, 'One metre': 3700, 'A short pen': 1500 };
 const PX_PER_CM = 37.8;
@@ -111,7 +111,7 @@ export default function mount(ctx) {
   ctx.ui.seg(Object.keys(INK), 'Endless', (v) => { budget = INK[v]; });
   ctx.ui.sep();
   ctx.ui.slider('Nib', 1, 7, base, (v) => { base = v; }, 0.2);
-  ctx.ui.seg([['#191714', 'Black'], ['#1f3f9e', 'Blue'], ['#a3261e', 'Red']], ink, (v) => { ink = v; });
+  ctx.ui.swatches(PAINTBOX, PAINTBOX[0], (v) => { ink = v; });
   ctx.ui.button('Replay', () => { if (state === 'done') startReplay(); });
   ctx.ui.button('New sheet', fresh, 'hot');
   const stats = ctx.ui.readout('');

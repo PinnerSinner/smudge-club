@@ -2,7 +2,7 @@
 import { sfx } from '../sound.js';
 import { TAU, clamp, hexRgb, noise2, offscreen } from '../kit.js';
 
-const GLASS = ['#1f6fc4', '#d43d3d', '#e8b92e', '#2a9d6a', '#7a3db8', '#3fb3d8', '#e8772e', '#f3e9c8', '#7fc9a9', '#b0245f'];
+const GLASS = ['#1f6fc4', '#d43d3d', '#e8b92e', '#2a9d6a', '#7a3db8', '#3fb3d8', '#e8772e', '#f3e9c8', '#7fc9a9', '#b0245f', '#12368a', '#f4d65a', '#ff8fb1', '#8fd14f', '#0f7a7a', '#c0a0e8', '#a84a1e', '#d8ecf4'];
 
 export default function mount(ctx) {
   const s = ctx.surface({ bleed: true, maxPx: 1600 });

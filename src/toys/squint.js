@@ -1,7 +1,7 @@
 // Squint: dots keep their distance from each other. Paint two pure colours and let your eyes do the mixing.
-import { TAU, offscreen } from '../kit.js';
+import { PAINTBOX, TAU, offscreen } from '../kit.js';
 
-const COLOURS = ['#e0507a', '#ef8a2e', '#fbd63f', '#2fa66a', '#1f5fb0', '#7b52c7', '#f5efdf', '#1c1a22'];
+const COLOURS = [...new Set(['#ef8a2e', '#1f5fb0', ...PAINTBOX])].slice(0, 16);
 
 export default function mount(ctx) {
   const s = ctx.surface({ paper: true, bg: '#f5efdf', maxPx: 2000 });

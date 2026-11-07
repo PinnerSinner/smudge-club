@@ -2,7 +2,7 @@
 import { sfx } from '../sound.js';
 import { clamp, offscreen, paperGrain, pick, pluck } from '../kit.js';
 
-const FILLS = ['#f1ece0', '#d8312c', '#f3c613', '#1f3f9e', '#141414'];
+const FILLS = ['#f1ece0', '#d8312c', '#f3c613', '#1f3f9e', '#141414', '#e9762b', '#2f7f6f', '#7fb7c9', '#e98aa0', '#6d4aa8', '#8d8a84', '#a8c64a'];
 const SCALE = [196, 220, 247, 294, 330, 392, 440, 494, 587, 659];
 const LINE = 9;
 

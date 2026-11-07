@@ -57,7 +57,7 @@ void main(){
 
 const VIEW = `
 in vec2 uv; out vec4 o;
-uniform sampler2D s; uniform vec2 res; uniform vec3 paper;
+uniform sampler2D s; uniform vec2 res; uniform vec3 paper, inkc;
 ${NOISE}
 void main(){
   vec4 c = texture(s,uv);
@@ -65,14 +65,14 @@ void main(){
   float grain = vnoise(uv*res*1.4)*.05;
   float amt = c.r+c.b;
   // Beer-Lambert: thin ink is grey, thick ink is black, and never quite flat.
-  vec3 inkc = vec3(.055,.058,.075);
   vec3 col = mix(paper,inkc,1.-exp(-amt*(1.25+f*.7)));
   col *= 1.-grain+c.g*.0;
   col -= vec3(.016,.014,.01)*clamp(c.g*2.2,0.,1.);
   o = vec4(col,1.);
 }`;
 
-const PAPERS = { Rice: [0.94, 0.915, 0.86], Bone: [0.97, 0.955, 0.925], Kraft: [0.76, 0.66, 0.52] };
+const PAPERS = { Rice: [0.94, 0.915, 0.86], Bone: [0.97, 0.955, 0.925], Kraft: [0.76, 0.66, 0.52], Blush: [0.95, 0.86, 0.83], Sky: [0.85, 0.91, 0.94] };
+const INKS = { Sumi: [0.055, 0.058, 0.075], Indigo: [0.06, 0.1, 0.36], Sepia: [0.27, 0.15, 0.07], Oxblood: [0.36, 0.05, 0.07], Moss: [0.1, 0.26, 0.13], Violet: [0.27, 0.09, 0.42], Teal: [0.03, 0.3, 0.32], Rust: [0.56, 0.2, 0.06], Rose: [0.72, 0.14, 0.36] };
 
 export default function mount(ctx) {
   const s = ctx.surface({ paper: true, maxPx: 1700 });
@@ -84,7 +84,7 @@ export default function mount(ctx) {
   if (!pp) { ctx.toast('This graphics card cannot run the ink simulation'); return; }
 
   const sim = program(gl, SIM), brush = program(gl, BRUSH), view = program(gl, VIEW);
-  let tool = 'ink', size = 22, load = 0.5, left = 1, paper = 'Rice', dry = 0, dampness = 0.1, last = null;
+  let inkName = 'Sumi', tool = 'ink', size = 22, load = 0.5, left = 1, paper = 'Rice', dry = 0, dampness = 0.1, last = null;
 
   function pass(prog, set) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, pp.b.fbo);
@@ -125,7 +125,7 @@ export default function mount(ctx) {
     dry = Math.max(0, dry * 0.97 - 0.00001);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     gl.viewport(0, 0, out.canvas.width, out.canvas.height);
-    view.use().i('s', 0).f('res', GW, GH).f('paper', ...PAPERS[paper]);
+    view.use().i('s', 0).f('res', GW, GH).f('paper', ...PAPERS[paper]).f('inkc', ...INKS[inkName]);
     bind(gl, pp.a.tex, 0);
     draw(gl);
   });
@@ -139,7 +139,8 @@ export default function mount(ctx) {
   ctx.ui.slider('Brush', 6, 70, size, (v) => { size = v; });
   ctx.ui.slider('Load', 10, 100, load * 100, (v) => { load = v / 100; });
   ctx.ui.slider('Damp', 0, 30, dampness * 100, (v) => { dampness = clamp(v / 100, 0, 0.3); });
-  ctx.ui.seg(Object.keys(PAPERS), paper, (v) => { paper = v; });
+  ctx.ui.select(Object.keys(INKS), inkName, (v) => { inkName = v; });
+  ctx.ui.select(Object.keys(PAPERS), paper, (v) => { paper = v; });
   ctx.ui.button('Dry it off', () => { dry = 0.01; });
   ctx.ui.button('Wet the sheet', () => {
     // Flood a light wash over everything, without disturbing what is already there.

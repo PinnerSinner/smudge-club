@@ -6,6 +6,12 @@ const LIGHTS = {
   Ember: (t) => `hsl(${28 + Math.sin(t * 5) * 26},98%,${58 + Math.sin(t * 3) * 8}%)`,
   Ice: (t) => `hsl(${190 + Math.sin(t * 4) * 34},90%,${70 + Math.sin(t * 2) * 8}%)`,
   Pearl: (t) => `hsl(${(t * 120 + 260) % 360},60%,84%)`,
+  Aurora: (t) => `hsl(${140 + Math.sin(t * 3) * 60},92%,62%)`,
+  Sunset: (t) => `hsl(${(340 + Math.sin(t * 3) * 42 + 360) % 360},96%,62%)`,
+  Rose: (t) => `hsl(${330 + Math.sin(t * 4) * 18},90%,${70 + Math.sin(t * 2) * 8}%)`,
+  Acid: (t) => `hsl(${72 + Math.sin(t * 6) * 30},100%,58%)`,
+  Ultraviolet: (t) => `hsl(${268 + Math.sin(t * 4) * 28},96%,66%)`,
+  Gold: (t) => `hsl(${44 + Math.sin(t * 3) * 8},92%,${60 + Math.sin(t * 5) * 10}%)`,
 };
 
 export default function mount(ctx) {
@@ -98,7 +104,7 @@ export default function mount(ctx) {
   ctx.clear = () => { pushUndo(); art.g.clearRect(0, 0, W, H); };
   ctx.snapshot = () => view.canvas;
 
-  ctx.ui.seg(Object.keys(LIGHTS), light, (v) => { light = v; });
+  ctx.ui.select(Object.keys(LIGHTS), light, (v) => { light = v; });
   ctx.ui.sep();
   ctx.ui.slider('Mirrors', 2, 24, n, (v) => { n = v; });
   ctx.ui.toggle('Reflect', mirror, (v) => { mirror = v; });

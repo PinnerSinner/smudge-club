@@ -3,6 +3,8 @@ import { sfx } from '../sound.js';
 import { TAU, clamp, dist, lerp, noise2, offscreen } from '../kit.js';
 import { createGL, program, draw, texture, upload, bind, RELIEF_FRAG } from '../gl.js';
 
+const GRAVELS = { Pale: [1, 1, 1], Rust: [1.02, 0.66, 0.5], Slate: [0.56, 0.62, 0.7], Moss: [0.66, 0.78, 0.54], Rose: [1.04, 0.78, 0.76], Basalt: [0.34, 0.34, 0.38], Ochre: [1.04, 0.84, 0.46] };
+
 export default function mount(ctx) {
   const s = ctx.surface({ bleed: true, maxPx: 1800 });
   const { W, H, px } = s;
@@ -14,7 +16,7 @@ export default function mount(ctx) {
   const prog = program(gl, RELIEF_FRAG);
   const tc = texture(gl), th = texture(gl);
 
-  let tool = 'rake', tines = 5, spread = 15, sun = 0.24, dirty = true;
+  let tool = 'rake', tines = 5, spread = 15, sun = 0.24, dirty = true, gravelName = 'Pale';
   const rocks = [];
   const n = noise2(4);
 
@@ -187,7 +189,7 @@ export default function mount(ctx) {
       .f('px', 1 / (W * px), 1 / (H * px))
       .f('light', sx, sy, sz)
       .f('strength', 2.5).f('gloss', 20).f('spec', 0).f('grain', 0.4)
-      .f('tint', lerp(1.08, 1, noon), lerp(0.9, 1, noon), lerp(0.76, 1, noon));
+      .f('tint', lerp(1.08, 1, noon) * GRAVELS[gravelName][0], lerp(0.9, 1, noon) * GRAVELS[gravelName][1], lerp(0.76, 1, noon) * GRAVELS[gravelName][2]);
     draw(gl);
   });
 
@@ -221,6 +223,7 @@ export default function mount(ctx) {
   drawStones();
 
   ctx.ui.seg([['rake', 'Rake'], ['stone', 'Stone']], tool, (v) => { tool = v; });
+  ctx.ui.select(Object.keys(GRAVELS), gravelName, (v) => { gravelName = v; });
   ctx.ui.sep();
   ctx.ui.slider('Tines', 1, 9, tines, (v) => { tines = v; });
   ctx.ui.slider('Spacing', 8, 26, spread, (v) => { spread = v; });

@@ -1,8 +1,8 @@
 // Highly Strung: hammer pins, wind thread, then pluck. Every string rings at a pitch set by its length.
 import { TAU, clamp, dist, pluck } from '../kit.js';
 
-const THREADS = ['#f4dfc8', '#e65f87', '#f2b705', '#35c9b0', '#6c9bd2', '#c8a2ff'];
-const BOARDS = { Midnight: '#121527', Walnut: '#2c1c14', Felt: '#123026', Chalk: '#ece6d9' };
+const THREADS = ['#f4dfc8', '#e65f87', '#f2b705', '#35c9b0', '#6c9bd2', '#c8a2ff', '#ffffff', '#ff5a3d', '#ff9a2e', '#f7e34a', '#8fd14f', '#22e6ff', '#3d7aff', '#ff4fd8', '#b0b8c4', '#16130f'];
+const BOARDS = { Midnight: '#121527', Walnut: '#2c1c14', Felt: '#123026', Chalk: '#ece6d9', Oxblood: '#2c0d14', Plum: '#22102e', Teal: '#0c2f36', Charcoal: '#1a1a1c' };
 const PENTA = [0, 2, 4, 7, 9];
 
 export default function mount(ctx) {
@@ -162,7 +162,7 @@ export default function mount(ctx) {
 
   ctx.ui.swatches(THREADS, colour, (c) => { colour = c; });
   ctx.ui.sep();
-  ctx.ui.seg(Object.keys(BOARDS), board, (v) => { board = v; });
+  ctx.ui.select(Object.keys(BOARDS), board, (v) => { board = v; });
   ctx.ui.slider('Gauge', 0.6, 3, weight, (v) => { weight = v; }, 0.1);
   ctx.ui.sep();
   ctx.ui.slider('Pins', 24, 300, pinCount, (v) => { pinCount = v; timesTable(pinCount, mult); });

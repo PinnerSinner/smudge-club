@@ -1,6 +1,6 @@
 # Smudge Club
 
-*Thumbs required.* Made by [Marcoverse](https://marcoverse.co.uk).
+Made by [Marcoverse](https://marcoverse.co.uk).
 
 **Live:** https://smudge.marcoverse.co.uk
 

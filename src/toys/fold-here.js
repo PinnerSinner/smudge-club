@@ -2,7 +2,7 @@
 import { sfx } from '../sound.js';
 import { TAU, clamp, hexRgb, noise2, offscreen, paperGrain, pick, smooth } from '../kit.js';
 
-const INKS = ['#111116', '#2b2f7a', '#6d1a24', '#0f5e4e', '#7a3db8'];
+const INKS = ['#111116', '#2b2f7a', '#6d1a24', '#0f5e4e', '#7a3db8', '#c7562e', '#b83a6a', '#1f7a9a', '#b8741a', '#d92b1f', '#2f8a4a', '#e0308a', '#5a4a3a', '#4a5a7a'];
 const VERDICTS = [
   'A moth, filing its taxes.',
   'Two bears agreeing to disagree.',

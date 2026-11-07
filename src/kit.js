@@ -2,6 +2,10 @@
 import { audioContext, bus, brush } from './sound.js';
 
 export const TAU = Math.PI * 2;
+
+// The shared paintbox: twenty colours, in spectrum order.
+export const PAINTBOX = ['#16130f', '#f2efe6', '#6d7a86', '#b8a98c', '#8a4a22', '#c7562e', '#d92b1f', '#f2672a', '#f2b705', '#f7e34a',
+  '#8fd14f', '#0f7a5a', '#1fa39a', '#35c9e0', '#1f4fd8', '#1c2a6e', '#7a3db8', '#b83a9c', '#e0308a', '#ff8fb1'];
 export const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 export const lerp = (a, b, t) => a + (b - a) * t;
 export const smooth = (a, b, v) => { const t = clamp((v - a) / (b - a)); return t * t * (3 - 2 * t); };
@@ -144,6 +148,7 @@ export function createToyContext({ stage, dock, tipEl, toast, timbre = 'none' })
         },
         // Pointer drawing in surface coordinates, with coalesced events for smooth lines.
         pointer(h) {
+          ctx.driver = ctx.driver || { s, h };
           let down = false, track = null;
           const toLocal = (e) => {
             const r = el.getBoundingClientRect();
@@ -155,6 +160,7 @@ export function createToyContext({ stage, dock, tipEl, toast, timbre = 'none' })
             try { el.setPointerCapture(e.pointerId); } catch { /* synthetic events have no capture */ }
             e.preventDefault();
             ctx.dismissTip();
+            ctx.onTouch?.();
             brush.start(timbre);
             track = { x: e.clientX, y: e.clientY, t: performance.now() };
             h.down?.(toLocal(e));
@@ -215,7 +221,7 @@ export function createToyContext({ stage, dock, tipEl, toast, timbre = 'none' })
 
     ui: {
       sep() { const d = document.createElement('div'); d.className = 'dock__sep'; dock.appendChild(d); },
-      swatches(colors, value, fn) {
+      swatches(colors, value, fn, { custom = true } = {}) {
         const w = document.createElement('div');
         w.className = 'sw';
         const btns = colors.map((c) => {
@@ -228,6 +234,18 @@ export function createToyContext({ stage, dock, tipEl, toast, timbre = 'none' })
         });
         const set = (c, fire) => { btns.forEach(([k, b]) => b.classList.toggle('on', k === c)); if (fire) fn(c); };
         set(value);
+        if (custom) {
+          const more = document.createElement('label');
+          more.className = 'sw__more';
+          more.title = 'Any colour you like';
+          const pick = document.createElement('input');
+          pick.type = 'color';
+          pick.value = value.length === 7 ? value : '#e0308a';
+          pick.setAttribute('aria-label', 'Any colour you like');
+          pick.oninput = () => set(pick.value, true);
+          more.appendChild(pick);
+          w.appendChild(more);
+        }
         dock.appendChild(w);
         return { set: (c) => set(c, false) };
       },
@@ -257,6 +275,17 @@ export function createToyContext({ stage, dock, tipEl, toast, timbre = 'none' })
         set(value);
         dock.appendChild(w);
         return { set };
+      },
+      select(options, value, fn) {
+        const s = document.createElement('select');
+        s.className = 'pick';
+        options.forEach((o) => {
+          const [v, label] = Array.isArray(o) ? o : [o, o];
+          s.add(new Option(label, v, false, v === value));
+        });
+        s.onchange = () => fn(s.value);
+        dock.appendChild(s);
+        return s;
       },
       button(label, fn, cls = '') {
         const b = document.createElement('button');

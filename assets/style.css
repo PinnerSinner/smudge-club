@@ -66,7 +66,7 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .brand em { color: var(--ink-2); font-size: 15px; margin-left: 6px; }
 .top__right { display: flex; gap: 8px; }
 .round {
-  height: 36px; min-width: 36px; padding: 0 12px; border-radius: 18px; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  height: 36px; min-width: 36px; padding: 0 12px; border-radius: 18px; white-space: nowrap; flex: none; display: inline-flex; align-items: center; justify-content: center; gap: 7px;
   background: var(--glass-2); border: 1px solid var(--line); font-size: 11px; letter-spacing: .08em; text-transform: uppercase;
   transition: background .2s, transform .2s var(--ease);
 }
@@ -145,13 +145,21 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .dock:empty { display: none; }
 .dock > * { flex: none; }
 .dock__sep { width: 1px; height: 24px; background: var(--line); }
-.sw { display: flex; gap: 6px; align-items: center; }
-.sw button { width: 24px; height: 24px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, .16); transition: transform .15s var(--ease); }
+.sw { display: grid; grid-auto-flow: column; grid-template-rows: repeat(2, 18px); gap: 3px 4px; align-items: center; }
+.sw button { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, .18); transition: transform .15s var(--ease); }
+.sw__more { grid-row: span 2; width: 27px; height: 27px; margin-left: 4px; border-radius: 50%; overflow: hidden; cursor: pointer; background: conic-gradient(#ff3d3d, #ffd23d, #3dff7a, #3dd0ff, #6a3dff, #ff3dc8, #ff3d3d); border: 2px solid rgba(255, 255, 255, .25); transition: transform .15s var(--ease); }
+.sw__more:hover { transform: scale(1.1); }
+.sw__more input { opacity: 0; width: 100%; height: 100%; cursor: pointer; display: block; }
+.strip { display: flex; gap: 5px; }
+.strip button { border: 2px solid transparent; }
+.strip button.on { border-color: #fff; }
+.pick { height: 32px; padding: 0 26px 0 12px; border-radius: 16px; border: 0; outline: none; cursor: pointer; font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink); background: var(--glass-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23f2efe9' stroke-width='1.3'/%3E%3C/svg%3E") no-repeat right 11px center / 9px; -webkit-appearance: none; appearance: none; }
+.pick option { background: #17151a; color: #f2efe9; }
+.round.on { background: var(--accent) !important; color: #fff; border-color: transparent; }
+.ghost { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; pointer-events: none; opacity: 0; z-index: 2; background: rgba(255, 255, 255, .22); border: 1.5px solid rgba(255, 255, 255, .9); box-shadow: 0 0 0 1px rgba(0, 0, 0, .4), 0 0 14px rgba(255, 255, 255, .45); transition: opacity .3s; }
 .sw button:hover { transform: scale(1.14); }
 .sw button.on { border-color: #fff; box-shadow: 0 0 0 2px rgba(0, 0, 0, .4); transform: scale(1.14); }
 .dock.dense { gap: 9px; }
-.dock.dense .sw { gap: 3px; }
-.dock.dense .sw button { width: 19px; height: 19px; }
 .dock.dense .seg button { padding: 0 8px; }
 .ctl { display: flex; align-items: center; gap: 8px; font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-2); }
 .ctl input[type=range] { -webkit-appearance: none; appearance: none; width: 92px; height: 20px; background: none; margin: 0; cursor: pointer; }
@@ -209,6 +217,10 @@ button { background: none; border: 0; padding: 0; cursor: pointer; }
 .surface canvas.nohit { pointer-events: none; }
 .surface.paper { box-shadow: 0 18px 60px rgba(0, 0, 0, .5); }
 
+@media (max-width: 1060px) {
+  .toy__title span { display: none; }
+  .toy [data-act=alive] .lbl, .toy [data-act=hang] .lbl { display: none; }
+}
 @media (max-width: 720px) {
   /* On a phone the stack runs behind the text, so the text gets its own quiet ground. */
   .shelf::after {

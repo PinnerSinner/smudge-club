@@ -6,6 +6,12 @@ const LIGHTS = {
   Neon: { core: '#ffe3f2', halo: 'rgba(255,40,140,.24)', sparks: null },
   Ice: { core: '#ecfaff', halo: 'rgba(70,190,255,.22)', sparks: 'rgba(140,220,255,' },
   Fairy: { core: '#fff2c9', halo: 'rgba(255,210,120,.1)', dots: true, sparks: null },
+  Ember: { core: '#ffd8b0', halo: 'rgba(255,60,20,.26)', sparks: 'rgba(255,110,50,' },
+  Gold: { core: '#fff8d0', halo: 'rgba(255,200,60,.22)', sparks: 'rgba(255,220,110,' },
+  Emerald: { core: '#e4fff0', halo: 'rgba(30,230,130,.22)', sparks: 'rgba(120,255,180,' },
+  Violet: { core: '#f0e4ff', halo: 'rgba(150,70,255,.24)', sparks: 'rgba(190,140,255,' },
+  Rose: { core: '#ffe8f0', halo: 'rgba(255,90,150,.22)', sparks: 'rgba(255,150,190,' },
+  Laser: { core: '#ffe4e4', halo: 'rgba(255,20,40,.26)', sparks: null },
 };
 
 export default function mount(ctx) {
@@ -155,7 +161,7 @@ export default function mount(ctx) {
   };
   ctx.snapshot = () => view.canvas;
 
-  ctx.ui.seg(Object.keys(LIGHTS), light, (v) => { light = v; });
+  ctx.ui.select(Object.keys(LIGHTS), light, (v) => { light = v; });
   ctx.ui.sep();
   ctx.ui.slider('Width', 1, 9, width, (v) => { width = v; });
   ctx.ui.toggle('Sparks', sparksOn, (v) => { sparksOn = v; });

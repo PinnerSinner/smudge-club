@@ -25,7 +25,7 @@ import leadlight from './toys/leadlight.js';
 import longExposure from './toys/long-exposure.js';
 import slowGrowth from './toys/slow-growth.js';
 
-export const SITE = { name: 'Smudge Club', tagline: 'thumbs required', prefix: 'SC' };
+export const SITE = { name: 'Smudge Club', prefix: 'SC' };
 export const MAKER = { name: 'Marcoverse', url: 'https://marcoverse.co.uk' };
 
 const T = (id, title, genre, glow, accent, blurb, tracks, mount) => ({ id, title, genre, glow, accent, blurb, tracks, mount });

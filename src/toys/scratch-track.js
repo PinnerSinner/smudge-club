@@ -1,6 +1,13 @@
 // Scratch Track: a waxed black board over shimmering foil. The foil shifts under the board as your hand moves.
 import { TAU, lerp, noise2, offscreen } from '../kit.js';
 
+const sheen = (stops) => (g, w, h) => {
+  const l = g.createLinearGradient(0, 0, w, h);
+  stops.forEach((c, i, all) => l.addColorStop(i / (all.length - 1), c));
+  g.fillStyle = l;
+  g.fillRect(0, 0, w, h);
+};
+
 const FOILS = {
   Rainbow(g, w, h) {
     const l = g.createLinearGradient(0, 0, w, h);
@@ -8,6 +15,12 @@ const FOILS = {
     g.fillStyle = l;
     g.fillRect(0, 0, w, h);
   },
+  Sunset: sheen(['#3a1a6e', '#c02a6a', '#ff5a4d', '#ffb347', '#ffe08a', '#ff6a8a', '#7a3dd0', '#ff5a4d', '#ffb347']),
+  Ocean: sheen(['#06304a', '#0f7a9a', '#35e0d0', '#c0fff0', '#1fa3d8', '#123a8a', '#35c9e0', '#7affd8', '#0f7a9a']),
+  Silver: sheen(['#6a7078', '#e8ecf0', '#ffffff', '#9aa2ac', '#f0f4f8', '#7a828c', '#dfe6ee', '#ffffff', '#8a929c']),
+  Copper: sheen(['#5a2a12', '#d67a44', '#ffd2b0', '#a8532a', '#ffb88a', '#6d3418', '#e8945a', '#ffe0c8', '#8c4522']),
+  Candy: sheen(['#ff8fb1', '#ffe08a', '#8ff0d0', '#a0c4ff', '#d8a0ff', '#ff8fb1', '#ffe08a', '#8ff0d0', '#a0c4ff']),
+  Acid: sheen(['#0a2a0a', '#3dff5a', '#e6ff3d', '#1fd8a0', '#c6ff3d', '#0f6a3a', '#3dff9e', '#fff14d', '#2fbf4a']),
   Gold(g, w, h) {
     const l = g.createLinearGradient(0, 0, w, h * 0.4);
     ['#7a4f12', '#e8c15a', '#fff4b8', '#b98226', '#ffe58f', '#8a5c16', '#f3d272', '#fff8d0', '#9c6c1c'].forEach((c, i, a) => l.addColorStop(i / (a.length - 1), c));
@@ -143,7 +156,7 @@ export default function mount(ctx) {
   waxOver();
   ctx.ui.seg(['Fine', 'Wide', 'Chisel', 'Comb'], nib, (v) => { nib = v; });
   ctx.ui.sep();
-  ctx.ui.seg(Object.keys(FOILS), foil, (v) => { foil = v; paintFoil(); });
+  ctx.ui.select(Object.keys(FOILS), foil, (v) => { foil = v; paintFoil(); });
   ctx.ui.sep();
   ctx.ui.button('Blow', () => {
     for (let i = 0; i < 80; i++) {

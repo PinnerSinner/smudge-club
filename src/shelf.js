@@ -1,7 +1,7 @@
-// The rack: stretched canvases you scroll through, turn over and step up to, each with its palette behind it.
+// The rack: stretched canvases you scroll through, turn over and step up to.
 import * as THREE from 'three';
 import { RELEASES } from './catalogue.js';
-import { drawCover, drawBack, paintsFrom } from './covers.js';
+import { drawCover, drawBack } from './covers.js';
 import { clamp, lerp, offscreen, rng, smooth } from './kit.js';
 import { sfx } from './sound.js';
 
@@ -11,7 +11,7 @@ const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
 const wrap = (d) => { d = ((d % N) + N) % N; return d > N / 2 ? d - N : d; };
 
-// Soft studio lights for the wet paint and the varnished palette to catch. Built in code, so no HDR download.
+// Soft studio lights for the wet paint to catch. Built in code, so no HDR download.
 function studioEnv(renderer) {
   const s = new THREE.Scene();
   s.background = new THREE.Color(0x0c0c10);
@@ -52,53 +52,12 @@ function weaveNormal() {
   return t;
 }
 
-function woodTexture() {
-  const c = offscreen(512, 512), g = c.getContext('2d'), r = rng(7);
-  g.fillStyle = '#a06a3a';
-  g.fillRect(0, 0, 512, 512);
-  for (let i = 0; i < 240; i++) {
-    const y = r() * 512;
-    g.strokeStyle = `rgba(${r() < 0.5 ? '70,38,14' : '214,164,108'},${0.06 + r() * 0.18})`;
-    g.lineWidth = 0.6 + r() * 2.2;
-    g.beginPath();
-    g.moveTo(0, y);
-    g.bezierCurveTo(170, y + r() * 26 - 13, 340, y + r() * 26 - 13, 512, y);
-    g.stroke();
-  }
-  // Years of old paint scraped back into the wood.
-  for (let i = 0; i < 60; i++) {
-    g.fillStyle = `hsla(${r() * 360},40%,50%,${r() * 0.1})`;
-    g.beginPath();
-    g.ellipse(r() * 512, r() * 512, 8 + r() * 34, 4 + r() * 16, r() * 3, 0, 6.3);
-    g.fill();
-  }
-  const t = new THREE.CanvasTexture(c);
-  t.colorSpace = THREE.SRGBColorSpace;
-  t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  return t;
-}
-
 function shadowTexture() {
   const c = offscreen(128, 128), g = c.getContext('2d');
   g.filter = 'blur(11px)';
   g.fillStyle = 'rgba(0,0,0,.55)';
   g.fillRect(36, 36, 56, 56);
   return new THREE.CanvasTexture(c);
-}
-
-function paletteGeometry() {
-  const s = new THREE.Shape();
-  s.moveTo(-0.56, -0.05);
-  s.bezierCurveTo(-0.62, 0.32, -0.2, 0.54, 0.16, 0.47);
-  s.bezierCurveTo(0.5, 0.41, 0.68, 0.14, 0.6, -0.14);
-  s.bezierCurveTo(0.53, -0.4, 0.24, -0.5, 0.0, -0.44);
-  s.bezierCurveTo(-0.13, -0.41, -0.12, -0.3, -0.04, -0.27);
-  s.bezierCurveTo(0.06, -0.23, 0.02, -0.13, -0.12, -0.17);
-  s.bezierCurveTo(-0.3, -0.22, -0.5, -0.32, -0.56, -0.05);
-  const hole = new THREE.Path();
-  hole.absellipse(-0.36, 0.1, 0.075, 0.095, 0, Math.PI * 2, true, 0);
-  s.holes.push(hole);
-  return new THREE.ExtrudeGeometry(s, { depth: 0.024, bevelEnabled: true, bevelSize: 0.012, bevelThickness: 0.009, bevelSegments: 3, curveSegments: 28 });
 }
 
 // Canvas geometry with gallery-wrapped sides: each edge samples the outermost sliver of the painting.
@@ -114,8 +73,6 @@ function canvasGeometry() {
   }
   return b;
 }
-
-const BLOBS = [[0.34, 0.26, 0.085], [0.09, 0.34, 0.07], [-0.16, 0.34, 0.078], [0.46, 0.02, 0.07], [0.38, -0.2, 0.082], [0.14, -0.3, 0.062]];
 
 export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer }) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
@@ -138,13 +95,10 @@ export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer 
   const geo = {
     canvas: canvasGeometry(),
     shadow: new THREE.PlaneGeometry(SIZE * 2.2, SIZE * 2.2),
-    palette: paletteGeometry(),
-    blob: new THREE.SphereGeometry(1, 18, 12),
   };
   const weave = weaveNormal();
   const mat = {
     shadow: new THREE.MeshBasicMaterial({ map: shadowTexture(), transparent: true, depthWrite: false }),
-    palette: new THREE.MeshPhysicalMaterial({ map: woodTexture(), roughness: 0.52, clearcoat: 0.4, clearcoatRoughness: 0.4 }),
   };
 
   const group = new THREE.Group();
@@ -162,28 +116,12 @@ export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer 
     const shadow = new THREE.Mesh(geo.shadow, mat.shadow);
     shadow.position.set(0.05, -0.07, -DEPTH / 2 - 0.19);
 
-    // Palette lives behind the canvas and slides out when this one is in focus.
-    const holder = new THREE.Group();
-    const palette = new THREE.Group();
-    const board = new THREE.Mesh(geo.palette, mat.palette);
-    palette.add(board);
-    const blobs = BLOBS.map(([x, y, r]) => {
-      const m = new THREE.Mesh(geo.blob, new THREE.MeshPhysicalMaterial({ color: rel.accent, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.2, emissive: rel.accent, emissiveIntensity: 0.3 }));
-      m.position.set(x, y, 0.04);
-      m.scale.set(r, r * (0.8 + (Math.abs(x * 7) % 0.3)), r * 0.42);
-      palette.add(m);
-      return m;
-    });
-    palette.scale.setScalar(1.08);
-    holder.add(palette);
-    holder.position.z = -DEPTH / 2 - 0.05;
-
-    spin.add(shadow, holder, body);
+    spin.add(shadow, body);
     root.visible = false;
     group.add(root);
 
     const k = 0.93 + rng(rel.index * 31 + 5)() * 0.13;
-    const c = { rel, root, spin, holder, palette, blobs, front, back, scale: k, ready: false };
+    const c = { rel, root, spin, front, back, scale: k, ready: false };
     root.traverse((o) => { if (o.isMesh) o.userData.item = c; });
     shadow.userData.item = null;
     return c;
@@ -211,11 +149,6 @@ export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer 
       m.color.set(0x2c2c2c);
       m.needsUpdate = true;
     }
-    // Blobs on the palette are mixed from the colours in this painting.
-    paintsFrom(cv, c.blobs.length).forEach((hex, i) => {
-      c.blobs[i].material.color.setHex(hex);
-      c.blobs[i].material.emissive.setHex(hex);
-    });
     c.ready = true;
   }
 
@@ -237,7 +170,7 @@ export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer 
   resize();
 
   // ── Layout: canvases leaning in a rack above and below the one you are looking at ──
-  function place(c, d, t) {
+  function place(c, d) {
     const a = Math.abs(d), s = Math.sign(d) || 0;
     const near = smooth(0, 1, a), far = Math.max(0, a - 1);
     const stepping = state.zoom.index === c.rel.index;
@@ -248,17 +181,7 @@ export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer 
     c.root.rotation.set(s * near * 0.92, 0, s * near * 0.012);
     c.root.scale.setScalar(lerp(c.scale, 1, stepping ? state.zoom.e : 0));
     c.root.visible = a < 6.5;
-    const f = 1 - near;
-    if (a < 1.5) {
-      const out = easeOut(f) * (stepping ? 1 - state.zoom.e : 1);
-      c.holder.position.x = 0.7 * out;
-      c.holder.position.y = -0.06 * out;
-      c.palette.rotation.z = -0.5 + Math.sin(t * 0.5 + c.rel.index) * 0.035;
-      // Turning the canvas over would swing the palette across its notes, so it tucks away as you turn.
-      const facing = c.rel.index === focusIdx ? smooth(-0.05, 0.7, Math.cos(state.spin)) : 1;
-      c.palette.scale.setScalar(1.08 * Math.max(0.001, facing));
-    }
-    return f;
+    return 1 - near;
   }
 
   const raycaster = new THREE.Raycaster();
@@ -340,7 +263,7 @@ export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer 
   function frame(now) {
     if (!state.running) return;
     requestAnimationFrame(frame);
-    const dt = Math.min(0.05, (now - last) / 1000), t = now / 1000;
+    const dt = Math.min(0.05, (now - last) / 1000);
     last = now;
 
     if (queue.length) { const c = items[queue.shift()]; if (!c.ready) paint(c); }
@@ -371,7 +294,7 @@ export function createShelf({ mount, onFocus, onOpenRequest, onHover, onPointer 
 
     state.par = lerp(state.par, state.anim ? 0 : 1, 1 - Math.exp(-dt * 12));
     for (const c of items) {
-      const f = place(c, wrap(c.rel.index - state.pos), t);
+      const f = place(c, wrap(c.rel.index - state.pos));
       const isFocus = c.rel.index === focusIdx;
       c.spin.rotation.y = lerp(c.spin.rotation.y, isFocus ? state.spin + state.mx * 0.14 * f * state.par : 0, isFocus ? 1 : 0.2);
       c.spin.rotation.x = isFocus ? state.my * 0.09 * f * state.par : 0;

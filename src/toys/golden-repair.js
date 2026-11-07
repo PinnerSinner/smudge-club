@@ -7,11 +7,20 @@ const GLAZES = {
   Celadon: ['#b9d4c4', '#7fae9c', '#4d7f70', '#d7e6da'],
   Ash: ['#d9d3c7', '#a79f92', '#6d675f', '#ece7dc'],
   Cobalt: ['#3a63a8', '#1b3674', '#0e1c44', '#7da0d8'],
+  Oxblood: ['#a8332c', '#6d1a1c', '#2c0b0f', '#c9705a'],
+  Jade: ['#4fa883', '#1f6a55', '#0c3029', '#9fd4b8'],
+  Honey: ['#e8b64a', '#b37a1e', '#5a370d', '#f4d690'],
+  Plum: ['#7d4a9c', '#44235f', '#1d0e2c', '#b692cc'],
+  Blush: ['#ecc3bd', '#cf8f8c', '#8a5356', '#f6e1dc'],
+  Midnight: ['#2c3448', '#141a2a', '#080b14', '#59647e'],
 };
 const METALS = {
   Gold: ['#fff4b0', '#e2ad2c', '#a8701a'],
   Silver: ['#ffffff', '#c6ccd4', '#7b8290'],
   Copper: ['#ffd2b0', '#d67a44', '#8c4522'],
+  Rose: ['#ffe0dc', '#e89a9a', '#a05a64'],
+  Bronze: ['#f0d09a', '#a8783c', '#5e3f1c'],
+  Platinum: ['#ffffff', '#dfe6ee', '#9fb0c4'],
 };
 
 export default function mount(ctx) {
@@ -336,9 +345,9 @@ export default function mount(ctx) {
 
   ctx.clear = reset;
   ctx.snapshot = () => canvas;
-  ctx.ui.seg(Object.keys(GLAZES), glaze, (v) => { glaze = v; bowl = makeBowl(); });
+  ctx.ui.select(Object.keys(GLAZES), glaze, (v) => { glaze = v; bowl = makeBowl(); });
   ctx.ui.sep();
-  ctx.ui.seg(Object.keys(METALS), metal, (v) => { metal = v; });
+  ctx.ui.select(Object.keys(METALS), metal, (v) => { metal = v; });
   ctx.ui.sep();
   ctx.ui.button('Gather all', () => {
     if (phase !== 'broken') return;

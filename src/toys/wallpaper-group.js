@@ -1,5 +1,7 @@
 // Wallpaper Group: strokes are stored as vectors and replayed through a real plane symmetry group,
 // so switching group or tile size re-weaves your whole drawing.
+import { PAINTBOX } from '../kit.js';
+
 const S3 = Math.sqrt(3) / 2;
 const rot = (deg) => { const a = (deg * Math.PI) / 180, c = Math.cos(a), s = Math.sin(a); return [c, s, -s, c, 0, 0]; };
 const I = [1, 0, 0, 1, 0, 0];
@@ -33,6 +35,10 @@ const PAPERS = [
   ['#123c30', '#f0e4c2', '#38b58a', '#e8a33d', '#ef8fa0'],
   ['#f7efe6', '#2a2a6e', '#e0508a', '#f2b705', '#1fa39a'],
   ['#1b1730', '#f7efe6', '#ff7a59', '#7ad7f0', '#c8a2ff'],
+  ['#f2c4c4', '#7a1f3d', '#f7efe6', '#2a6a6a', '#e8a33d'],
+  ['#c9e4dc', '#1c425c', '#e0508a', '#f7efe6', '#f2672a'],
+  ['#f2b705', '#16130f', '#d92b1f', '#f7efe6', '#1f4fd8'],
+  ['#3a1440', '#ffb347', '#ff4f8b', '#35c9e0', '#f7efe6'],
 ];
 
 export default function mount(ctx) {
@@ -132,7 +138,7 @@ export default function mount(ctx) {
   ctx.dock.appendChild(colourBox);
   const showColours = () => {
     const before = new Set(ctx.dock.children);
-    ctx.ui.swatches(PAPERS[paper].slice(1), colour, (c) => { colour = c; });
+    ctx.ui.swatches([...new Set([...PAPERS[paper].slice(1), ...PAINTBOX])].slice(0, 20), colour, (c) => { colour = c; });
     colourBox.replaceChildren(...[...ctx.dock.children].filter((c) => !before.has(c)));
   };
   showColours();

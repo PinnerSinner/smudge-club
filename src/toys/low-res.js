@@ -2,7 +2,14 @@
 import { sfx } from '../sound.js';
 import { offscreen } from '../kit.js';
 
-const PALETTE = ['#00000000', '#14111e', '#3a3560', '#6f6aa8', '#c6c3e6', '#f7f4ec', '#d83a4a', '#f08a4b', '#fbd06b', '#6fce5a', '#1f8a70', '#2d8fd5', '#7ad7f0', '#b14fc0', '#ef8fb1', '#7a4a2c'];
+const PALETTES = {
+  Classic: ['#00000000', '#14111e', '#3a3560', '#6f6aa8', '#c6c3e6', '#f7f4ec', '#d83a4a', '#f08a4b', '#fbd06b', '#6fce5a', '#1f8a70', '#2d8fd5', '#7ad7f0', '#b14fc0', '#ef8fb1', '#7a4a2c'],
+  Sunset: ['#00000000', '#1a0f2e', '#3f1d5c', '#7a2a8c', '#c0367a', '#f04a6a', '#f8784a', '#fba84a', '#fdd76a', '#fff4d0', '#2a3f7a', '#3f7ab0', '#7ac8d0', '#2f6a5a', '#7ab060', '#5a2f2a'],
+  Forest: ['#00000000', '#0f1a14', '#1f3a2a', '#2f6a4a', '#4f9a5a', '#8fc85a', '#d0e07a', '#f4f0c0', '#7a5a3a', '#a87a4a', '#d0a06a', '#3a6a7a', '#6aa8b0', '#c04a3a', '#e8903a', '#f0c84a'],
+  Candy: ['#00000000', '#2a1a3a', '#5a4a8a', '#a08ae0', '#d8c8ff', '#fff6f0', '#ff5a8a', '#ff9ab8', '#ffd0dc', '#ffe08a', '#8ff0a8', '#5ad8c0', '#6ac0ff', '#b8e0ff', '#ff9a5a', '#c87a5a'],
+  Arcade: ['#00000000', '#000000', '#1d2b53', '#7e2553', '#008751', '#ab5236', '#5f574f', '#c2c3c7', '#fff1e8', '#ff004d', '#ffa300', '#ffec27', '#00e436', '#29adff', '#83769c', '#ff77a8'],
+};
+let PALETTE = PALETTES.Classic;
 const FRAMES = 4;
 
 export default function mount(ctx) {
@@ -147,7 +154,19 @@ export default function mount(ctx) {
   };
 
   ctx.dock.classList.add('dense');
-  const sw = ctx.ui.swatches(PALETTE.slice(1), PALETTE[colour], (c) => { colour = PALETTE.indexOf(c); });
+  // Sixteen colours at a time, but five sets of them. Swapping sets recolours every frame at once.
+  const swBox = document.createElement('div');
+  swBox.style.display = 'contents';
+  ctx.dock.appendChild(swBox);
+  let sw;
+  const showPalette = () => {
+    const before = new Set(ctx.dock.children);
+    sw = ctx.ui.swatches(PALETTE.slice(1), PALETTE[colour], (c) => { colour = PALETTE.indexOf(c); }, { custom: false });
+    swBox.replaceChildren(...[...ctx.dock.children].filter((c) => !before.has(c)));
+  };
+  PALETTE = PALETTES.Classic;
+  showPalette();
+  ctx.ui.select(Object.keys(PALETTES), 'Classic', (v) => { PALETTE = PALETTES[v]; showPalette(); thumbs(); });
   ctx.ui.sep();
   ctx.ui.seg([['pencil', 'Pen'], ['fill', 'Fill'], ['dither', 'Dither'], ['erase', 'Rub'], ['pick', 'Pick']], tool, (v) => { tool = v; });
   ctx.ui.toggle('Mirror', mirror, (v) => { mirror = v; });
@@ -155,7 +174,7 @@ export default function mount(ctx) {
 
   // Frame strip: small live thumbnails in the dock.
   const strip = document.createElement('div');
-  strip.className = 'sw';
+  strip.className = 'strip';
   ctx.dock.appendChild(strip);
   const thumbCanvases = Array.from({ length: FRAMES }, (_, i) => {
     const b = document.createElement('button');

@@ -1,8 +1,8 @@
 // Spin Cycle: fairground spin art. Paint droplets obey centrifugal and Coriolis forces in the disc's rotating frame.
-import { TAU, clamp, lerp, offscreen } from '../kit.js';
+import { PAINTBOX, TAU, clamp, lerp, offscreen } from '../kit.js';
 import { motor } from '../sound.js';
 
-const PAINTS = ['#e0308a', '#ffb000', '#00a6d6', '#4b2bc9', '#18b369', '#e8452d', '#141318', '#ffffff'];
+const PAINTS = PAINTBOX;
 
 export default function mount(ctx) {
   const s = ctx.surface({ bleed: true, maxPx: 1800 });
@@ -16,7 +16,7 @@ export default function mount(ctx) {
   cg.setTransform(px, 0, 0, px, R * px, R * px);   // origin at the disc's centre
   cg.lineCap = 'round';
 
-  let colour = PAINTS[0], throttle = 0.55, dir = 1, omega = 0, angle = 0, braking = false, flow = 5;
+  let colour = '#e0308a', throttle = 0.55, dir = 1, omega = 0, angle = 0, braking = false, flow = 5;
   const drops = [];
   const P = { x: 0, y: 0, down: false, wait: 0 };
 

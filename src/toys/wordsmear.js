@@ -1,10 +1,10 @@
 // Wordsmear: a brush loaded with language. Letters are laid along the stroke, swelling as you slow down.
-import { clamp, lerp, paperGrain } from '../kit.js';
+import { PAINTBOX, clamp, lerp, paperGrain } from '../kit.js';
 
 const VERSE = 'the brush remembers what the hand forgets and the hand forgets what the eye forgave ';
 const FACES = [['italic 400 %px Fraunces', 'Serif'], ['400 %px Anton', 'Poster'], ['600 %px Caveat', 'Hand'], ['500 %px "DM Mono"', 'Type'], ['400 %px VT323', 'Pixel']];
-const INKS = ['#1b1a1f', '#c23b5a', '#1f4fd8', '#0f7a5a', '#b8741a', '#f6e9e3'];
-const PAPERS = { Cream: '#f6efe3', Blush: '#f6e0da', Night: '#141320', Sage: '#dfe5d4' };
+const INKS = PAINTBOX;
+const PAPERS = { Cream: '#f6efe3', Blush: '#f6e0da', Night: '#141320', Sage: '#dfe5d4', Sky: '#d6e8f2', Butter: '#f7e7a8', Plum: '#2c1538', Teal: '#0f3a3f' };
 
 export default function mount(ctx) {
   const s = ctx.surface({ paper: true, maxPx: 2200 });
@@ -18,7 +18,7 @@ export default function mount(ctx) {
   function fillPaper() {
     g.fillStyle = PAPERS[paper];
     g.fillRect(0, 0, W, H);
-    paperGrain(g, W, H, { alpha: paper === 'Night' ? 0.03 : 0.05, seed: 8 });
+    paperGrain(g, W, H, { alpha: ['Night', 'Plum', 'Teal'].includes(paper) ? 0.03 : 0.05, seed: 8 });
   }
 
   const nextChar = () => {
@@ -66,7 +66,7 @@ export default function mount(ctx) {
     g.translate(x, y);
     g.rotate(a);
     g.font = face.replace('%', st.sz.toFixed(1));
-    g.fillStyle = gradient ? `hsl(${(cursor * 5) % 360},70%,${paper === 'Night' ? 70 : 42}%)` : ink;
+    g.fillStyle = gradient ? `hsl(${(cursor * 5) % 360},70%,${['Night', 'Plum', 'Teal'].includes(paper) ? 70 : 42}%)` : ink;
     g.textAlign = 'center';
     g.textBaseline = 'middle';
     g.fillText(ch, 0, 0);
@@ -96,6 +96,6 @@ export default function mount(ctx) {
   ctx.ui.sep();
   ctx.ui.seg(FACES.map(([f, l]) => [f, l]), face, (v) => { face = v; });
   ctx.ui.slider('Size', 14, 80, base, (v) => { base = v; });
-  ctx.ui.seg(Object.keys(PAPERS), paper, (v) => { paper = v; pushUndo(); fillPaper(); });
+  ctx.ui.select(Object.keys(PAPERS), paper, (v) => { paper = v; pushUndo(); fillPaper(); });
   ctx.hint('Paint slowly to shout, quickly to whisper. Type your own words in the dock.');
 }

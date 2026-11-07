@@ -7,6 +7,11 @@ const INKS = {
   Gilt: (r) => `hsl(${44 - r * 16},82%,${74 - r * 16}%)`,
   Glass: (r) => `hsl(${r * 340},86%,68%)`,
   Bone: () => '#f3ead9',
+  Ocean: (r) => `hsl(${170 + r * 60},78%,${72 - r * 16}%)`,
+  Ember: (r) => `hsl(${50 - r * 50},94%,${70 - r * 12}%)`,
+  Moss: (r) => `hsl(${70 + r * 70},58%,${70 - r * 18}%)`,
+  Rose: (r) => `hsl(${345 - r * 40},84%,${80 - r * 18}%)`,
+  Neon: (r) => `hsl(${(r * 900) % 360},100%,62%)`,
 };
 
 export default function mount(ctx) {
@@ -116,7 +121,7 @@ export default function mount(ctx) {
   drawGuide();
   ctx.ui.text(MANTRA.trim(), (v) => { text = v + ' '; cursor = 0; held = null; }, 'Type a mantra');
   ctx.ui.sep();
-  ctx.ui.seg(Object.keys(INKS), ink, (v) => { ink = v; });
+  ctx.ui.select(Object.keys(INKS), ink, (v) => { ink = v; });
   ctx.ui.slider('Spokes', 3, 32, spokes, (v) => { spokes = v; drawGuide(); });
   ctx.ui.slider('Letters', 0.5, 2, scale, (v) => { scale = v; }, 0.05);
   ctx.ui.toggle('Mirror', mirror, (v) => { mirror = v; });

@@ -15,6 +15,12 @@ const DYES = {
   Ember: [[0.07, 0.02, 0.03], [0.82, 0.22, 0.1], [1, 0.84, 0.5]],
   Orchid: [[0.07, 0.03, 0.12], [0.62, 0.22, 0.72], [1, 0.82, 0.92]],
   Lichen: [[0.08, 0.1, 0.05], [0.52, 0.6, 0.18], [0.95, 0.93, 0.68]],
+  Ocean: [[0.01, 0.04, 0.14], [0.08, 0.3, 0.82], [0.72, 0.92, 1]],
+  Neon: [[0.03, 0.01, 0.08], [0.95, 0.1, 0.72], [0.75, 1, 0.3]],
+  Sunset: [[0.1, 0.03, 0.16], [0.94, 0.3, 0.32], [1, 0.86, 0.42]],
+  Bone: [[0.1, 0.09, 0.08], [0.6, 0.54, 0.46], [0.97, 0.94, 0.86]],
+  Rose: [[0.12, 0.02, 0.07], [0.88, 0.32, 0.5], [1, 0.86, 0.88]],
+  Ice: [[0.02, 0.07, 0.12], [0.36, 0.72, 0.86], [0.92, 1, 1]],
 };
 
 const SIM = `
@@ -128,7 +134,7 @@ export default function mount(ctx) {
   inoculate();
   ctx.ui.seg(Object.keys(SPECIES), species, (v) => { species = v; });
   ctx.ui.sep();
-  ctx.ui.seg(Object.keys(DYES), dye, (v) => { dye = v; });
+  ctx.ui.select(Object.keys(DYES), dye, (v) => { dye = v; });
   ctx.ui.sep();
   ctx.ui.slider('Clock', 1, 24, speed, (v) => { speed = v; });
   ctx.ui.slider('Seed', 5, 40, rad * 1000, (v) => { rad = v / 1000; });

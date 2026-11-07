@@ -4,10 +4,13 @@ import { sfx } from '../sound.js';
 import { TAU, clamp, offscreen, paperGrain } from '../kit.js';
 
 const BATHS = {
-  Harbour: { bath: '#e9dfc9', inks: ['#1c425c', '#b84a30', '#e0aa46', '#3a7a8c', '#14202f', '#f1e8d6'] },
-  Peacock: { bath: '#0f2a2c', inks: ['#1fa39a', '#e6b93d', '#c5426b', '#2d5fb0', '#f0e6cf', '#123f46'] },
-  Rosewater: { bath: '#f5e4dc', inks: ['#c9546c', '#7d2f4d', '#e9a2a0', '#3f5f7a', '#f7f0e6', '#d9894a'] },
-  Bookbinder: { bath: '#d9c7a3', inks: ['#6d2a1d', '#21352d', '#a87a2a', '#1d2a44', '#e8dcc0', '#9c4a2a'] },
+  Harbour: { bath: '#e9dfc9', inks: ['#1c425c', '#b84a30', '#e0aa46', '#3a7a8c', '#14202f', '#f1e8d6', '#7a3e5c', '#5d8a5a', '#d9754a', '#9fc4d0'] },
+  Peacock: { bath: '#0f2a2c', inks: ['#1fa39a', '#e6b93d', '#c5426b', '#2d5fb0', '#f0e6cf', '#123f46', '#7bd0b0', '#e87a3d', '#6a3fb0', '#d9e86a'] },
+  Rosewater: { bath: '#f5e4dc', inks: ['#c9546c', '#7d2f4d', '#e9a2a0', '#3f5f7a', '#f7f0e6', '#d9894a', '#a06ac0', '#5fa89a', '#e8c35a', '#2e2a3a'] },
+  Bookbinder: { bath: '#d9c7a3', inks: ['#6d2a1d', '#21352d', '#a87a2a', '#1d2a44', '#e8dcc0', '#9c4a2a', '#4f6a3a', '#7a2f4a', '#c9a24a', '#3a5a6d'] },
+  Sunset: { bath: '#2a1540', inks: ['#ff6a4d', '#ffb347', '#ff4f8b', '#ffe08a', '#7a3dd0', '#3fd0d0', '#f7f0e6', '#c02a6a', '#ff8fb1', '#1f2f7a'] },
+  Lagoon: { bath: '#dff2ee', inks: ['#0f7a7a', '#1f4fd8', '#35c9b0', '#f2b705', '#e0308a', '#14304a', '#8fd14f', '#f2672a', '#7a3db8', '#ffffff'] },
+  Neon: { bath: '#0a0a12', inks: ['#ff2fb0', '#22e6ff', '#c6ff3d', '#ff8a1f', '#8a5cff', '#ffffff', '#ff3d4f', '#2fff9a', '#ffe63d', '#3d7aff'] },
 };
 
 export default function mount(ctx) {
@@ -270,7 +273,7 @@ export default function mount(ctx) {
   ctx.ui.seg([['drop', 'Drop'], ['rake', 'Rake'], ['stylus', 'Stylus'], ['swirl', 'Swirl']], tool, (v) => { tool = v; });
   ctx.ui.slider('Size', 12, 110, dropSize, (v) => { dropSize = v; });
   ctx.ui.slider('Tines', 3, 28, tines, (v) => { tines = v; });
-  ctx.ui.seg(Object.keys(BATHS), bath, (v) => { bath = v; ink = BATHS[v].inks[0]; showInks(); dirty = true; });
+  ctx.ui.select(Object.keys(BATHS), bath, (v) => { bath = v; ink = BATHS[v].inks[0]; showInks(); dirty = true; });
   ctx.ui.button('Lay the paper', () => { if (!paper && !printed) { paper = { t: 0 }; sfx('paper'); } }, 'hot');
 
   // Start with a loaded bath, so the first rake already has something to pull.

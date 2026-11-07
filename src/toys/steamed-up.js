@@ -6,6 +6,9 @@ const VIEWS = {
   Night: { sky: ['#07101f', '#10233f', '#2a2342'], lights: ['#ffb347', '#ff5e62', '#7ad7f0', '#fff3c4', '#ff8fb1'], fog: 'rgb(174,190,208)' },
   Dawn: { sky: ['#37436e', '#b9708a', '#f4b582'], lights: ['#ffe2a8', '#ffd0a0', '#fff3c4'], fog: 'rgb(226,216,214)' },
   Harbour: { sky: ['#0b2233', '#144058', '#1f6372'], lights: ['#ffd27a', '#7fe0d0', '#fff3c4', '#ff7a59'], fog: 'rgb(178,204,208)' },
+  Dusk: { sky: ['#1c1440', '#6a2a7a', '#e8724a'], lights: ['#ffb35a', '#ff6a8a', '#ffe08a', '#b08aff'], fog: 'rgb(200,180,205)' },
+  Neon: { sky: ['#07040f', '#1a0a3a', '#3a0a4a'], lights: ['#ff2fb0', '#22e6ff', '#c6ff3d', '#ff8a1f', '#8a5cff'], fog: 'rgb(170,160,205)' },
+  Forest: { sky: ['#061a14', '#0f3a2c', '#2f6a4a'], lights: ['#d9f27a', '#ffe08a', '#7af0b0'], fog: 'rgb(180,205,188)' },
 };
 
 export default function mount(ctx) {

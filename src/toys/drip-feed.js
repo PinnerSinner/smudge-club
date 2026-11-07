@@ -1,8 +1,8 @@
 // Drip Feed: thrown enamel with real relief. Colour and height paint separately, then a shader lights the wet surface.
-import { TAU, clamp, dist, lerp, offscreen } from '../kit.js';
+import { PAINTBOX, TAU, clamp, dist, lerp, offscreen } from '../kit.js';
 import { createGL, program, draw, texture, upload, bind, RELIEF_FRAG } from '../gl.js';
 
-const TINS = ['#16130f', '#f2efe6', '#d92b1f', '#f2b705', '#1f4fd8', '#0f7a5a', '#e0308a', '#8a4a22'];
+const TINS = PAINTBOX;
 
 export default function mount(ctx) {
   const s = ctx.surface({ paper: true, bg: '#efe9dc', maxPx: 1800 });

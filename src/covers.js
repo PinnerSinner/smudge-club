@@ -509,25 +509,6 @@ export function drawBack(release, c) {
     g.restore();
   }
   small(g, release.cat, 'rgba(42,36,32,.7)', -295, 286);
-  small(g, `${SITE.name.toUpperCase()}: ${SITE.tagline.toUpperCase()}`, 'rgba(42,36,32,.7)', 295, 286, 'right');
+  small(g, SITE.name.toUpperCase(), 'rgba(42,36,32,.7)', 295, 286, 'right');
   g.restore();
-}
-
-// The colours actually in a painting, for the blobs on its palette: the most vivid one, then whatever is furthest from those picked so far.
-export function paintsFrom(canvas, count = 6) {
-  const n = 14, o = offscreen(n, n), x = o.getContext('2d', { willReadFrequently: true });
-  x.drawImage(canvas, 0, 0, n, n);
-  const d = x.getImageData(0, 0, n, n).data, px = [];
-  for (let i = 0; i < d.length; i += 4) px.push([d[i], d[i + 1], d[i + 2]]);
-  const vivid = (p) => Math.max(...p) - Math.min(...p);
-  const picked = [px.reduce((a, b) => (vivid(b) > vivid(a) ? b : a))];
-  while (picked.length < count) {
-    let best = px[0], bd = -1;
-    for (const p of px) {
-      const m = Math.min(...picked.map((q) => (p[0] - q[0]) ** 2 + (p[1] - q[1]) ** 2 + (p[2] - q[2]) ** 2));
-      if (m > bd) { bd = m; best = p; }
-    }
-    picked.push(best);
-  }
-  return picked.map(([r, g, b]) => (r << 16) | (g << 8) | b);
 }

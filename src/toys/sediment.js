@@ -1,7 +1,7 @@
 // Sediment: a falling-sand cellular automaton inside a glass bottle, with the seaside poking stick.
 import { clamp, hexRgb, rng, offscreen, smooth } from '../kit.js';
 
-const SANDS = ['#e9d9b5', '#c7562e', '#efb54a', '#2e6f8e', '#7a3e2c', '#e58a3a', '#264653', '#b83a6a', '#5d9c59', '#f4f1ea'];
+const SANDS = ['#f4f1ea', '#e9d9b5', '#efb54a', '#e58a3a', '#c7562e', '#a82e2a', '#7a3e2c', '#3a2a22', '#b83a6a', '#e78fb0', '#7a4aa8', '#2e3f8e', '#2e6f8e', '#5fb8c9', '#264653', '#2f8a6a', '#5d9c59', '#b9c94a'];
 
 // Bottle profile: half-width as a function of height, from cork to base.
 const SHAPES = {

@@ -7,6 +7,10 @@ const SCREENS = {
   Amber: { bg: '#140b02', line: '#ffb84a', glow: 'rgba(255,184,74,.5)', fade: 0.012 },
   Silver: { bg: '#b9bcc0', line: '#2b2d31', glow: null, fade: 0 },
   Paper: { bg: '#efe7d6', line: '#1b1a1f', glow: null, fade: 0 },
+  Ice: { bg: '#03101a', line: '#6fd8ff', glow: 'rgba(111,216,255,.5)', fade: 0.012 },
+  Rose: { bg: '#16040c', line: '#ff6fa8', glow: 'rgba(255,111,168,.5)', fade: 0.012 },
+  Violet: { bg: '#0c0618', line: '#b48aff', glow: 'rgba(180,138,255,.5)', fade: 0.012 },
+  Blueprint: { bg: '#123a7a', line: '#eaf2ff', glow: null, fade: 0 },
 };
 
 export default function mount(ctx) {
@@ -234,7 +238,7 @@ export default function mount(ctx) {
     return c;
   };
 
-  ctx.ui.seg(Object.keys(SCREENS), theme, (v) => { theme = v; });
+  ctx.ui.select(Object.keys(SCREENS), theme, (v) => { theme = v; });
   ctx.ui.sep();
   ctx.ui.slider('Weight', 1, 6, weight, (v) => { weight = v; }, 0.5);
   ctx.ui.toggle('Hold trace', persist, (v) => { persist = v; });

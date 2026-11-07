@@ -4,6 +4,7 @@ import { createShelf, webglAvailable } from './shelf.js';
 import { createBackdrop } from './backdrop.js';
 import { createWipe } from './wipe.js';
 import { createAlive } from './alive.js';
+import { createAuto } from './auto.js';
 import { drawCover, setMakerMark } from './covers.js';
 import logo from '../assets/marcoverse.png';
 import { createToyContext, offscreen, rng } from './kit.js';
@@ -18,13 +19,14 @@ const ICON = {
   hang: '<svg viewBox="0 0 24 24"><path d="M12 3v4M12 7L5 12M12 7l7 5M4 12h16v9H4z"/></svg>',
   spark: '<svg viewBox="0 0 24 24"><path d="M12 3l1.8 6.2L20 11l-6.2 1.8L12 19l-1.8-6.2L4 11l6.2-1.8zM19 17l.7 2.3L22 20l-2.3.7L19 23l-.7-2.3L16 20l2.3-.7z"/></svg>',
   grid: '<svg viewBox="0 0 24 24"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z"/></svg>',
+  auto: '<svg viewBox="0 0 24 24"><path d="M4 20c3-1 4-3 5-5l3 3c-2 1-4 2-8 2zM10 13l8-9 3 3-9 8z"/></svg>',
   moon: '<svg viewBox="0 0 24 24"><path d="M20 14A8 8 0 1110 4a7 7 0 0010 10z"/></svg>',
   sound: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM16 9a4 4 0 010 6M18.500 6.500a8 8 0 010 11"/></svg>',
   silent: '<svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9zM17 9.500l4 5M21 9.500l-4 5"/></svg>',
 };
 
 const app = document.getElementById('app');
-document.title = `${SITE.name}: ${SITE.tagline}`;
+document.title = SITE.name;
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
   set(k, v) { try { localStorage.setItem(k, v); return true; } catch { return false; } },
@@ -37,7 +39,7 @@ const badge = `<a class="maker" href="${MAKER.url}" target="_blank" rel="noopene
 const shelfEl = $(`<section class="shelf" aria-label="${SITE.name} rack">
   <div class="shelf__grain"></div>
   <header class="top">
-    <h1 class="brand" style="margin:0;font-weight:400">${SITE.name}<em>${SITE.tagline}</em></h1>
+    <h1 class="brand" style="margin:0;font-weight:400">${SITE.name}</h1>
     <div class="top__right">
       <button class="round" data-act="cat" aria-label="See the whole collection">${ICON.grid}<span class="lbl">Collection</span></button>
       <button class="round" data-act="sound" aria-label="Sound on or off"></button>
@@ -77,6 +79,7 @@ const toyEl = $(`<section class="toy" aria-hidden="true">
     <div class="toy__title"><b></b><span></span></div>
     <a class="toy__maker" href="${MAKER.url}" target="_blank" rel="noopener" aria-label="Made by ${MAKER.name}" title="Made by ${MAKER.name}"><img src="${logo}" alt="${MAKER.name} logo"></a>
     <div class="toy__spacer"></div>
+    <button class="round" data-act="auto" title="Let it paint itself. Touch the canvas to take over.">${ICON.auto}<span class="lbl">Auto</span></button>
     <button class="round" data-act="sound" aria-label="Sound on or off"></button>
     <button class="round" data-act="undo" aria-label="Undo">${ICON.undo}</button>
     <button class="round" data-act="clear" aria-label="Start again">${ICON.clear}</button>
@@ -157,7 +160,8 @@ async function loadHung(id) {
 }
 
 // ── Toy lifecycle ──
-let current = null, currentCtx = null, busy = false;
+let current = null, currentCtx = null, currentAuto = null, busy = false;
+const autoBtn = toyEl.querySelector('[data-act=auto]');
 
 function mountToy(rel) {
   stage.replaceChildren();
@@ -168,6 +172,9 @@ function mountToy(rel) {
   rel.mount(ctx, rel);
   toyEl.querySelector('[data-act=undo]').style.display = ctx.undo ? '' : 'none';
   currentCtx = ctx;
+  currentAuto = createAuto(ctx, { id: rel.id, timbre: rel.timbre, onChange: (on) => autoBtn.classList.toggle('on', on) });
+  ctx.onTouch = () => currentAuto.stop();
+  autoBtn.style.display = currentAuto.available ? '' : 'none';
 }
 
 async function openToy(rel) {
@@ -204,6 +211,7 @@ async function closeToy() {
   const rel = current;
   sfx('back');
   await wipe.cover(rel.accent);
+  currentAuto?.stop();
   currentCtx?.destroy();
   currentCtx = null;
   stopMotor();
@@ -213,7 +221,7 @@ async function closeToy() {
   shelf?.resume();
   backdrop.resume();
   ambience('studio');
-  document.title = `${SITE.name}: ${SITE.tagline}`;
+  document.title = SITE.name;
   current = null;
   const stepBack = shelf?.close();
   await wipe.reveal();
@@ -228,6 +236,7 @@ function sync() {
   if (rel) { if (rel !== current) { if (current) swapToy(rel); else openToy(rel); } } else if (current) closeToy();
 }
 function swapToy(rel) {
+  currentAuto?.stop();
   currentCtx?.destroy();
   stopMotor();
   current = rel;
@@ -241,6 +250,10 @@ toyEl.addEventListener('click', (e) => {
   const act = e.target.closest('[data-act]')?.dataset.act;
   if (!act || !currentCtx) return;
   if (act === 'back') location.hash = '#/';
+  if (act === 'auto') {
+    if (currentAuto.running) currentAuto.stop();
+    else { currentAuto.start(); toast('Painting by itself. Touch the canvas to take over.'); }
+  }
   if (act === 'undo') currentCtx.undo?.();
   if (act === 'clear') currentCtx.clear?.();
   if (act === 'alive') {
